@@ -1,6 +1,18 @@
+using System.Reflection.Metadata;
 using Hackaton.Context;
 using Hackaton.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Companion;
+using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
+using Document = QuestPDF.Fluent.Document;
+
+QuestPDF.Settings.License = LicenseType.Community;
+
+Document.Create(container =>
+{
+
+}).ShowInCompanion();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +26,6 @@ builder.Services.AddHttpClient("PVGIS", httpClient =>
     httpClient.BaseAddress = new Uri("https://re.jrc.ec.europa.eu/api/v5_3/");
 });
 
-builder.Services.AddScoped<HttpClientPV>();
 
 var app = builder.Build();
 
