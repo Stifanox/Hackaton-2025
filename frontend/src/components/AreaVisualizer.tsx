@@ -24,9 +24,19 @@ const RectangleFittingVisualizer = () => {
     };
 
     const calculate = () => {
-        const centerLat = 50.02445549648474;
-        const centerLon = 19.91730552935117;
+        const centerLat = 50.02424640940002;
+        const centerLon = 19.91677561148512;
 
+        const directionAngles: Record<Direction, number> = {
+            north: 0,
+            NE: 45,
+            east: 90,
+            SE: 135,
+            south: 180,
+            SW: 225,
+            west: 270,
+            NW: 315,
+        };
 
         const W = parseFloat(width);
         const H = parseFloat(height);
@@ -49,27 +59,30 @@ const RectangleFittingVisualizer = () => {
         const offsetY = (H - totalHeight) / 2;
 
         const newRectangles = [];
+        const mainCenterX = W / 2;
+        const mainCenterY = H / 2;
+        const angleDeg = directionAngles[direction];
+        const angleRad = angleDeg * Math.PI / 180;
+        const earthRadius = 6378137;
 
         for (let y = 0; y < countY; y++) {
             for (let x = 0; x < countX; x++) {
                 const xPos = offsetX + x * (smallRect.width + spacing);
                 const yPos = offsetY + y * (smallRect.height + spacing);
 
-
                 const centerX = xPos + smallRect.width / 2;
                 const centerY = yPos + smallRect.height / 2;
 
-                const mainCenterX = W / 2;
-                const mainCenterY = H / 2;
+                const deltaX = centerX - mainCenterX;
+                const deltaY = centerY - mainCenterY;
 
-                const relativeX = centerX - mainCenterX;
-                const relativeY = centerY - mainCenterY;
+                // Obrót względem kierunku
+                const rotatedX = deltaX * Math.cos(angleRad) - deltaY * Math.sin(angleRad);
+                const rotatedY = deltaX * Math.sin(angleRad) + deltaY * Math.cos(angleRad);
 
-// Wzory na przesunięcie GPS
-                const earthRadius = 6378137; // promień Ziemi w metrach
-
-                const latOffset = relativeY / earthRadius * (180 / Math.PI);
-                const lonOffset = relativeX / (earthRadius * Math.cos(centerLat * Math.PI / 180)) * (180 / Math.PI);
+                // GPS z obrotem
+                const latOffset = rotatedY / earthRadius * (180 / Math.PI);
+                const lonOffset = rotatedX / (earthRadius * Math.cos(centerLat * Math.PI / 180)) * (180 / Math.PI);
 
                 const gpsLat = centerLat + latOffset;
                 const gpsLon = centerLon + lonOffset;
@@ -83,23 +96,21 @@ const RectangleFittingVisualizer = () => {
                         y: centerY,
                     },
                     relativeToCenter: {
-                        x: parseFloat(relativeX.toFixed(3)),
-                        y: parseFloat(relativeY.toFixed(3)),
+                        x: parseFloat(deltaX.toFixed(3)),
+                        y: parseFloat(deltaY.toFixed(3)),
                     },
                     gps: {
                         lat: parseFloat(gpsLat.toFixed(8)),
                         lon: parseFloat(gpsLon.toFixed(8)),
                     },
                 });
-
-
             }
         }
-
 
         setRectangles(newRectangles);
         setContainerSize({ w: W, h: H });
     };
+
 
     const toggleSelection = (index: number) => {
         const updated = [...rectangles];
