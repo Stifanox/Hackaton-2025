@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Stifano\\Desktop\\Hack boiler\\backend\\Hackaton\\Hackaton.csproj": {}
+    "/app/Hackaton.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Stifano\\Desktop\\Hack boiler\\backend\\Hackaton\\Hackaton.csproj": {
+    "/app/Hackaton.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Stifano\\Desktop\\Hack boiler\\backend\\Hackaton\\Hackaton.csproj",
+        "projectUniqueName": "/app/Hackaton.csproj",
         "projectName": "Hackaton",
-        "projectPath": "C:\\Users\\Stifano\\Desktop\\Hack boiler\\backend\\Hackaton\\Hackaton.csproj",
-        "packagesPath": "C:\\Users\\Stifano\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Stifano\\Desktop\\Hack boiler\\backend\\Hackaton\\obj\\",
+        "projectPath": "/app/Hackaton.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/app/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Stifano\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/root/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -89,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.408/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.410/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

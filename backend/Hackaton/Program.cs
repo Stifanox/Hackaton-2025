@@ -8,6 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHttpClient("PVGIS", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://re.jrc.ec.europa.eu/api/v5_3/");
+});
+
+builder.Services.AddScoped<HttpClientPV>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
