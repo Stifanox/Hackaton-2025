@@ -48,7 +48,7 @@ public class PvController : ControllerBase
         
         var content = await httpResponseMessage.Content.ReadAsStringAsync();
         var data = JsonSerializer.Deserialize<object>(content);
-        var response = new SuccessResponse<object>(data: content);
+        var response = new SuccessResponse<object>(data: data);
         return Ok(response);
     }
 
