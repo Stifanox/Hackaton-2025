@@ -13,6 +13,16 @@ builder.Services.AddHttpClient("PVGIS", httpClient =>
 {
     httpClient.BaseAddress = new Uri("https://re.jrc.ec.europa.eu/api/v5_3/");
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:9000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddScoped<HttpClientPV>();
 
@@ -29,6 +39,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
