@@ -8,7 +8,7 @@ using System.Text.Json;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PvController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
@@ -22,7 +22,7 @@ public class PvController : ControllerBase
     public async Task<IActionResult> GetInfo([FromQuery] InputDto input)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return UnprocessableEntity(new ErrorResponse<string>(422, "Wysłano niepoprawne dane"));
 
         var queryParams = new List<string>
         {
@@ -34,7 +34,8 @@ public class PvController : ControllerBase
 
         if (input.UseHorizon.HasValue) queryParams.Add($"usehorizon={(input.UseHorizon.Value ? 1 : 0)}");
         if (!string.IsNullOrEmpty(input.MountingPlace)) queryParams.Add($"mountingplace={input.MountingPlace}");
-        if (input.FixedAngle.HasValue) queryParams.Add($"angle={input.FixedAngle}");
+        if (input.Fixed.HasValue) queryParams.Add($"fixed={(input.Fixed.Value ? 1 : 0)}");
+        if (input.Angle.HasValue) queryParams.Add($"angle={input.Angle}");
         if (input.OptimalAngles.HasValue) queryParams.Add($"optimalangles={(input.OptimalAngles.Value ? 1 : 0)}");
         queryParams.Add($"outputformat=json");
 
@@ -47,9 +48,32 @@ public class PvController : ControllerBase
             return StatusCode((int)httpResponseMessage.StatusCode);
         
         var content = await httpResponseMessage.Content.ReadAsStringAsync();
-        var data = JsonSerializer.Deserialize<object>(content);
-        var response = new SuccessResponse<object>(data: data);
-        return Ok(response);
+        
+        
+        using var document = JsonDocument.Parse(content);
+
+        if (document.RootElement.TryGetProperty("outputs", out var outputsElement) 
+            && document.RootElement.TryGetProperty("inputs", out var inputsElement)
+            && inputsElement.TryGetProperty("mounting_system", out var mountingSystemElement))
+        {
+            string outputsJson = outputsElement.GetRawText();
+            string mountingSystemJson = mountingSystemElement.GetRawText();
+            
+            var outputsObj = JsonSerializer.Deserialize<object>(outputsJson);
+            var mountingSystemObj = JsonSerializer.Deserialize<object>(mountingSystemJson);
+
+            var responseData = new
+            {
+                outputs = outputsObj,
+                mounting_system = mountingSystemObj
+            };
+
+            return Ok(new SuccessResponse<object>(data: responseData));
+        }
+
+        return BadRequest(new ErrorResponse<string>(422, "Brak pola 'outputs' lub 'mounting_system' w odpowiedzi API"));
+       
+        
     }
 
 }
