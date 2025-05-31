@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import {useState, useCallback, useMemo} from "react";
 import type {ApiResponse, ErrorResponse, SuccessResponse} from "./ApiResponse.ts";
 
 type RequestStatus = "idle" | "pending" | "success" | "error";
@@ -35,15 +35,10 @@ export function useApiRequest<T>(
         }
     }, [requestFn]);
 
-    const isPending = () =>{
-        return state.status === "pending";
-    }
-    const isSuccess = () =>{
-        return state.status === "success";
-    }
-    const isError = () =>{
-        return state.status === "error";
-    }
+    const isPending = useMemo(() => state.status === "pending", [state.status]);
+    const isSuccess = useMemo(() => state.status === "success", [state.status]);
+    const isError = useMemo(() => state.status === "error", [state.status]);
+
 
     return { ...state, isError,isSuccess, isPending ,execute };
 }

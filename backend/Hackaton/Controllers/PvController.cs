@@ -8,7 +8,7 @@ using System.Text.Json;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PvController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;

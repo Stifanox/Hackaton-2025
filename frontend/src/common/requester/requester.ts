@@ -13,7 +13,7 @@ type Payload = {
 function requester<T,K>(link: string, method: MethodType, payload?: T|object): Promise<ApiResponse<K>> {
     const headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
     }
     const body = payload ? JSON.stringify(payload) : null;
     let data:Payload = {method, headers}
