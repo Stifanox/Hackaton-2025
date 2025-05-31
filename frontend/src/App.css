@@ -6,3 +6,8 @@
   padding: 2rem;
   text-align: center;
 }
+.main-background {
+  background-image: url('/your-background.jpg'); /* podmień na swój obrazek */
+  background-size: cover;
+  background-position: center;
+}
