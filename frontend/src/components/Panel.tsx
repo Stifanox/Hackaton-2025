@@ -32,8 +32,12 @@ const Panel: React.FC<Props> = ({
                 top: rect.y * scaleFactor,
                 width: 1 * scaleFactor,
                 height: 2 * scaleFactor,
-                backgroundColor: rect.selected ? '#4CAF50' : '#2196F3',
+                backgroundImage: `url('/solar.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
                 border: '1px solid #333',
+                opacity: rect.selected ? 1 : 0.6,
+
                 cursor: 'pointer',
             }}
         />
