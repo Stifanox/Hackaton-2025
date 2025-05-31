@@ -1,5 +1,3 @@
-import type {ApiResponse} from "./ApiResponse.ts";
-
 const BASE_URL = 'http://localhost:9001/api'
 
 type MethodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -10,7 +8,7 @@ type Payload = {
     method: MethodType;
 }
 
-function requester<T,K>(link: string, method: MethodType, payload?: T|object): Promise<ApiResponse<K>> {
+function requester<T>(link: string, method: MethodType, payload?: T|object): Promise<Response> {
     const headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
