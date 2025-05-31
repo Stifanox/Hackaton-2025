@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hackaton", "Hackaton\Hackaton.csproj", "{AF19E87E-CEE8-4858-8CC2-70A87E5EEE6D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E73FAB6C-1FF3-49AA-A892-48C11E5D19BA}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF19E87E-CEE8-4858-8CC2-70A87E5EEE6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF19E87E-CEE8-4858-8CC2-70A87E5EEE6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF19E87E-CEE8-4858-8CC2-70A87E5EEE6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF19E87E-CEE8-4858-8CC2-70A87E5EEE6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

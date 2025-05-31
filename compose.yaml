@@ -1,0 +1,39 @@
+﻿services:
+  hackaton:
+    image: hackaton
+    build:
+      context: ./backend
+      dockerfile: Hackaton/Dockerfile
+    volumes:
+      - ./backend/Hackaton:/app
+      - ~/.nuget/packages:/root/.nuget/packages:cached
+    ports:
+      - "9001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    command: [ "dotnet", "watch", "run","--project", "./app/Hackaton.csproj" , "--urls=http://0.0.0.0:8080" ]
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: hackaton_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "9002:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "9000:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true 
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    working_dir: /app
+
+volumes:
+  pgdata: 
