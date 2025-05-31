@@ -1,58 +1,53 @@
 import { useState } from 'react';
 
-interface Props {
-    // We can remove onSubmit from props if the form handles the submission itself
-    // However, if we still want to notify a parent component, we can keep it.
-    // For now, let's assume the form handles the submission to the server directly.
-    // onSubmit?: (lat: string, lng: string) => void; // Make it optional or remove if not needed by parent
-}
 
-const CoordinateForm = (/* { onSubmit }: Props */) => { // Destructure onSubmit if you keep it
+
+const CoordinateForm = (/* { onSubmit }: Props */) => {
     const [latitude, setLatitude] = useState('');
     const [longitude, setLongitude] = useState('');
-    const [loading, setLoading] = useState(false); // State for loading indicator
-    const [error, setError] = useState<string | null>(null); // State for error messages
-    const [success, setSuccess] = useState<string | null>(null); // State for success messages
+    const [peakPower, setPeakPower] = useState(''); // Nowy stan dla "peak power"
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null); // Clear previous errors
-        setSuccess(null); // Clear previous success messages
+        setError(null); // Wyczyść poprzednie błędy
+        setSuccess(null); // Wyczyść poprzednie komunikaty sukcesu
 
         try {
-            // Validate input (optional, but good practice for client-side)
-            if (!latitude || !longitude) {
-                throw new Error('Please enter both latitude and longitude.');
+            // Walidacja inputów
+            if (!latitude || !longitude || !peakPower) {
+                throw new Error('Please enter latitude, longitude, and peak power.');
             }
 
-            // You might want to add more robust validation here, e.g., regex for valid coordinates
-
-            const response = await fetch('http://localhost:9001/api', { //
-                method: 'POST', //
-                headers: { //
-                    'Content-Type': 'application/json', //
+            const response = await fetch('YOUR_SERVER_ENDPOINT_HERE', { // Zastąp to swoim rzeczywistym endpointem API
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ latitude, longitude }), //
+                body: JSON.stringify({ latitude, longitude, peakPower }), // Dodaj peakPower do wysyłanych danych
             });
 
-            if (!response.ok) { //
-                const errorData = await response.json(); // Try to parse error response
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`); //
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json(); // Parse the successful response
+            const result = await response.json();
             console.log('Success:', result);
-            setSuccess('Coordinates sent successfully!');
-            // Optionally, clear the form fields after successful submission
+            setSuccess('Coordinates and peak power sent successfully!');
+            // Opcjonalnie, wyczyść pola formularza po udanym przesłaniu
             setLatitude('');
             setLongitude('');
-            // If you still want to notify a parent, uncomment the line below
-            // onSubmit?.(latitude, longitude);
+            setPeakPower(''); // Wyczyść pole peak power
+            // Jeśli nadal chcesz powiadomić komponent rodzicielski, odkomentuj poniższą linię
+            // onSubmit?.(latitude, longitude, peakPower);
         } catch (err: any) {
-            console.error('Error sending coordinates:', err);
-            setError(err.message || 'Failed to send coordinates.');
+            console.error('Error sending data:', err);
+            setError(err.message || 'Failed to send data.');
         } finally {
             setLoading(false);
         }
@@ -63,7 +58,7 @@ const CoordinateForm = (/* { onSubmit }: Props */) => { // Destructure onSubmit 
             onSubmit={handleSubmit}
             className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md space-y-4"
         >
-            <h2 className="text-center text-xl font-semibold text-gray-800">Podaj współrzędne</h2>
+            <h2 className="text-center text-xl font-semibold text-gray-800">Podaj współrzędne i moc szczytową</h2>
 
             <input
                 type="text"
@@ -72,7 +67,7 @@ const CoordinateForm = (/* { onSubmit }: Props */) => { // Destructure onSubmit 
                 placeholder="Szerokość"
                 className="w-full px-3 py-2 border rounded"
                 required
-                disabled={loading} // Disable input during loading
+                disabled={loading}
             />
             <input
                 type="text"
@@ -81,13 +76,22 @@ const CoordinateForm = (/* { onSubmit }: Props */) => { // Destructure onSubmit 
                 placeholder="Długość"
                 className="w-full px-3 py-2 border rounded"
                 required
-                disabled={loading} // Disable input during loading
+                disabled={loading}
+            />
+            <input // Nowy input dla "peak power"
+                type="text"
+                value={peakPower}
+                onChange={(e) => setPeakPower(e.target.value)}
+                placeholder="Moc szczytowa (np. kW)"
+                className="w-full px-3 py-2 border rounded"
+                required
+                disabled={loading}
             />
 
             <button
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-                disabled={loading} // Disable button during loading
+                disabled={loading}
             >
                 {loading ? 'Wysyłanie...' : 'Zatwierdź'}
             </button>
