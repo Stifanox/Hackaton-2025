@@ -34,7 +34,8 @@ public class PvController : ControllerBase
 
         if (input.UseHorizon.HasValue) queryParams.Add($"usehorizon={(input.UseHorizon.Value ? 1 : 0)}");
         if (!string.IsNullOrEmpty(input.MountingPlace)) queryParams.Add($"mountingplace={input.MountingPlace}");
-        if (input.FixedAngle.HasValue) queryParams.Add($"angle={input.FixedAngle}");
+        if (input.Fixed.HasValue) queryParams.Add($"fixed={(input.Fixed.Value ? 1 : 0)}");
+        if (input.Angle.HasValue) queryParams.Add($"angle={input.Angle}");
         if (input.OptimalAngles.HasValue) queryParams.Add($"optimalangles={(input.OptimalAngles.Value ? 1 : 0)}");
         queryParams.Add($"outputformat=json");
 
