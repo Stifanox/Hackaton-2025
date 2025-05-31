@@ -22,6 +22,10 @@ const RectangleFittingVisualizer = () => {
     };
 
     const calculate = () => {
+        const centerLat = 50.02445549648474;
+        const centerLon = 19.91730552935117;
+
+
         const W = parseFloat(width);
         const H = parseFloat(height);
 
@@ -48,10 +52,25 @@ const RectangleFittingVisualizer = () => {
             for (let x = 0; x < countX; x++) {
                 const xPos = offsetX + x * (smallRect.width + spacing);
                 const yPos = offsetY + y * (smallRect.height + spacing);
+
+
                 const centerX = xPos + smallRect.width / 2;
                 const centerY = yPos + smallRect.height / 2;
+
                 const mainCenterX = W / 2;
                 const mainCenterY = H / 2;
+
+                const relativeX = centerX - mainCenterX;
+                const relativeY = centerY - mainCenterY;
+
+// Wzory na przesunięcie GPS
+                const earthRadius = 6378137; // promień Ziemi w metrach
+
+                const latOffset = relativeY / earthRadius * (180 / Math.PI);
+                const lonOffset = relativeX / (earthRadius * Math.cos(centerLat * Math.PI / 180)) * (180 / Math.PI);
+
+                const gpsLat = centerLat + latOffset;
+                const gpsLon = centerLon + lonOffset;
 
                 newRectangles.push({
                     x: xPos,
@@ -62,10 +81,15 @@ const RectangleFittingVisualizer = () => {
                         y: centerY,
                     },
                     relativeToCenter: {
-                        x: parseFloat((centerX - mainCenterX).toFixed(3)), // przesunięcie w metrach
-                        y: parseFloat((centerY - mainCenterY).toFixed(3)),
+                        x: parseFloat(relativeX.toFixed(3)),
+                        y: parseFloat(relativeY.toFixed(3)),
+                    },
+                    gps: {
+                        lat: parseFloat(gpsLat.toFixed(8)),
+                        lon: parseFloat(gpsLon.toFixed(8)),
                     },
                 });
+
 
             }
         }
@@ -83,8 +107,15 @@ const RectangleFittingVisualizer = () => {
 
     const handleContextMenu = (e, i) => {
         e.preventDefault();
+
+        const panel = rectangles[i];
+        if (panel?.gps) {
+            console.log(`🛰️ Panel #${i + 1} - GPS: ${panel.gps.lat}, ${panel.gps.lon}`);
+        }
+
         showTooltip(e.clientX, e.clientY, `Prawy klik na prostokąt #${i + 1}`);
     };
+
 
     const showTooltip = (clientX, clientY, text) => {
         setTooltip({
@@ -152,9 +183,11 @@ const RectangleFittingVisualizer = () => {
                                     showTooltip(
                                         e.clientX,
                                         e.clientY,
-                                        `Δx: ${r.relativeToCenter?.x} m, Δy: ${r.relativeToCenter?.y} m`
+                                        `Δx: ${r.relativeToCenter?.x} m, Δy: ${r.relativeToCenter?.y} m
+Lat: ${r.gps?.lat}, Lon: ${r.gps?.lon}`
                                     );
                                 }}
+
                                 onMouseLeave={hideTooltip}
                                 style={{
                                     position: 'absolute',
