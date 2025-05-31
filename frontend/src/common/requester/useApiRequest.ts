@@ -9,8 +9,15 @@ interface ApiState<T> {
     error: ErrorResponse | null;
 }
 
-export function useApiRequest<T>(
-    requestFn: () => ApiResponse<T>,
+interface UseApiRequestOptions<T> {
+    onPending?: () => void;
+    onSuccess?: (data: SuccessResponse<T>) => void;
+    onError?: (error: ErrorResponse | string) => void;
+}
+
+export function useApiRequest<T,K>(
+    requestFn: (data?:K) => ApiResponse<T>,
+    options?: UseApiRequestOptions<T>,
 ) {
     const [state, setState] = useState<ApiState<T>>({
         status: "idle",
@@ -18,27 +25,33 @@ export function useApiRequest<T>(
         error: null,
     });
 
-    const execute = useCallback(async () => {
+    const execute = useCallback(async (payload?:K) => {
         setState({ status: "pending", data: null, error: null });
+        options?.onPending?.();
 
         try {
-            const data = await requestFn();
-            if(data.success) {
+            const data = await requestFn(payload);
+
+            if (data.success) {
                 setState({ status: "success", data, error: null });
-            }else {
-                setState({ status: "error", data: null, error:data || "Error" });
+                options?.onSuccess?.(data);
+            } else {
+                setState({ status: "error", data: null, error: data });
+                options?.onError?.(data);
             }
             return data;
         } catch (err: any) {
-            setState({ status: "error", data: null, error: err.message || "Error" });
+            const message = err.message || "Error";
+            setState({ status: "error", data: null, error: message });
+            options?.onError?.(message);
             throw err;
         }
-    }, [requestFn]);
+    }, [requestFn, options]);
 
     const isPending = useMemo(() => state.status === "pending", [state.status]);
     const isSuccess = useMemo(() => state.status === "success", [state.status]);
     const isError = useMemo(() => state.status === "error", [state.status]);
 
 
-    return { ...state, isError,isSuccess, isPending ,execute };
+    return { ...state, isError, isSuccess, isPending ,execute };
 }
