@@ -165,6 +165,7 @@ const RectangleFittingVisualizer = () => {
         <>
         <div className="flex flex-row w-screen h-screen">
             <LeftPanel />
+            <div style={{ fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>
             <h2>Kalkulator i wizualizacja</h2>
             <div>
                 <label>Szerokość (m): </label>
@@ -241,6 +242,7 @@ Lat: ${r.gps?.lat}, Lon: ${r.gps?.lon}`
               </div>
             )}
           </div>
+        </div>
         </div>
     </>
   );
