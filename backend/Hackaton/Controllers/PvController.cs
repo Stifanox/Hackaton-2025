@@ -47,9 +47,20 @@ public class PvController : ControllerBase
             return StatusCode((int)httpResponseMessage.StatusCode);
         
         var content = await httpResponseMessage.Content.ReadAsStringAsync();
-        var data = JsonSerializer.Deserialize<object>(content);
-        var response = new SuccessResponse<object>(data: data);
-        return Ok(response);
+        
+        
+        using var document = JsonDocument.Parse(content);
+        if (document.RootElement.TryGetProperty("outputs", out var outputsElement))
+        {
+            string outputsJson = outputsElement.GetRawText();
+            var data = JsonSerializer.Deserialize<object>(outputsJson);
+            return Ok(new SuccessResponse<object>(data: data));
+        }
+
+        return BadRequest(new ErrorResponse<string>(data: "Brak pola 'outputs' w odpowiedzi API"));
+
+       
+        
     }
 
 }
