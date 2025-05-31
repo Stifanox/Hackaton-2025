@@ -26,3 +26,8 @@
     animation: wave 8s linear infinite reverse;
   }
 }
+.main-background {
+  background-image: url('/your-background.jpg'); /* podmień na swój obrazek */
+  background-size: cover;
+  background-position: center;
+}
