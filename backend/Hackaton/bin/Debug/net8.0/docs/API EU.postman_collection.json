@@ -1,0 +1,90 @@
+{
+	"info": {
+		"_postman_id": "d10361d9-7675-4ee3-b19f-165e15501e4e",
+		"name": "API EU",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45498987",
+		"_collection_link": "https://mateusz-5824014.postman.co/workspace/Mateusz's-Workspace~27940bdb-dd23-49ef-8d1e-cfe2e814930b/collection/45498987-d10361d9-7675-4ee3-b19f-165e15501e4e?action=share&source=collection_link&creator=45498987"
+	},
+	"item": [
+		{
+			"name": "PVCalc",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=45&lon=8&peakpower=1&loss=14&mountingplace=building&optimalangles=1&outputformat=json",
+					"protocol": "https",
+					"host": [
+						"re",
+						"jrc",
+						"ec",
+						"europa",
+						"eu"
+					],
+					"path": [
+						"api",
+						"v5_3",
+						"PVcalc"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "45",
+							"description": "[Required]"
+						},
+						{
+							"key": "lon",
+							"value": "8",
+							"description": "[Required]"
+						},
+						{
+							"key": "peakpower",
+							"value": "1",
+							"description": "[Required] power in kW"
+						},
+						{
+							"key": "loss",
+							"value": "14",
+							"description": "[Required], percent of loss in system"
+						},
+						{
+							"key": "usehorizon",
+							"value": "",
+							"description": "[Optional] 0 or 1",
+							"disabled": true
+						},
+						{
+							"key": "mountingplace",
+							"value": "building",
+							"description": "[Optional] Values: building | free"
+						},
+						{
+							"key": "fixed",
+							"value": null,
+							"description": "[Optional] whether system is in place or moving, default is fixed ",
+							"disabled": true
+						},
+						{
+							"key": "angle",
+							"value": null,
+							"description": "[Optional] Angle of solar panel",
+							"disabled": true
+						},
+						{
+							"key": "optimalangles",
+							"value": "1",
+							"description": "[Optional] Calc opitmal angles, 1 or 0"
+						},
+						{
+							"key": "outputformat",
+							"value": "json",
+							"description": "[Optional] Format of output"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
