@@ -22,7 +22,7 @@ public class PvController : ControllerBase
     public async Task<IActionResult> GetInfo([FromQuery] InputDto input)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return UnprocessableEntity(new ErrorResponse<string>(422, "Wysłano niepoprawne dane"));
 
         var queryParams = new List<string>
         {
@@ -57,7 +57,7 @@ public class PvController : ControllerBase
             return Ok(new SuccessResponse<object>(data: data));
         }
 
-        return BadRequest(new ErrorResponse<string>(data: "Brak pola 'outputs' w odpowiedzi API"));
+        return BadRequest(new ErrorResponse<string>(422,"Brak pola 'outputs' w odpowiedzi API"));
 
        
         
