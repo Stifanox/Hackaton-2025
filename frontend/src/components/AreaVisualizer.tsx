@@ -7,10 +7,19 @@ const RectangleFittingVisualizer = () => {
     const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
     const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, text: '' });
 
-    const smallRect = { width: 1, height: 1.7 };
+    const smallRect = { width: 1, height: 2 };
     const edgeMargin = 0.3;
     const spacing = 0.15;
     const scaleFactor = 100; // 1m = 100px
+    const directions = ['north','NE', 'east','SE', 'south','SW', 'west', 'NW'] as const;
+    type Direction = typeof directions[number];
+
+    const [direction, setDirection] = useState<Direction>('north');
+    const cycleDirection = () => {
+        const currentIndex = directions.indexOf(direction);
+        const nextIndex = (currentIndex + 1) % directions.length;
+        setDirection(directions[nextIndex]);
+    };
 
     const calculate = () => {
         const W = parseFloat(width);
@@ -27,19 +36,40 @@ const RectangleFittingVisualizer = () => {
         const countX = Math.floor((usableWidth + spacing) / (smallRect.width + spacing));
         const countY = Math.floor((usableHeight + spacing) / (smallRect.height + spacing));
 
+        const totalWidth = countX * smallRect.width + (countX - 1) * spacing;
+        const totalHeight = countY * smallRect.height + (countY - 1) * spacing;
+
+        const offsetX = (W - totalWidth) / 2;
+        const offsetY = (H - totalHeight) / 2;
+
         const newRectangles = [];
 
         for (let y = 0; y < countY; y++) {
             for (let x = 0; x < countX; x++) {
-                const xPos = edgeMargin + x * (smallRect.width + spacing);
-                const yPos = edgeMargin + y * (smallRect.height + spacing);
+                const xPos = offsetX + x * (smallRect.width + spacing);
+                const yPos = offsetY + y * (smallRect.height + spacing);
+                const centerX = xPos + smallRect.width / 2;
+                const centerY = yPos + smallRect.height / 2;
+                const mainCenterX = W / 2;
+                const mainCenterY = H / 2;
+
                 newRectangles.push({
                     x: xPos,
                     y: yPos,
                     selected: false,
+                    center: {
+                        x: centerX,
+                        y: centerY,
+                    },
+                    relativeToCenter: {
+                        x: parseFloat((centerX - mainCenterX).toFixed(3)), // przesunięcie w metrach
+                        y: parseFloat((centerY - mainCenterY).toFixed(3)),
+                    },
                 });
+
             }
         }
+
 
         setRectangles(newRectangles);
         setContainerSize({ w: W, h: H });
@@ -88,6 +118,10 @@ const RectangleFittingVisualizer = () => {
                 <label>Wysokość (m): </label>
                 <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} step="0.01" />
             </div>
+            <div style={{ marginTop: '10px' }}>
+                <button onClick={cycleDirection}>Kierunek: {direction.toUpperCase()}</button>
+            </div>
+
             <button onClick={calculate} style={{ marginTop: '10px' }}>Oblicz i pokaż</button>
 
             {rectangles.length > 0 && (
@@ -113,7 +147,14 @@ const RectangleFittingVisualizer = () => {
                                 key={i}
                                 onClick={() => toggleSelection(i)}
                                 onContextMenu={(e) => handleContextMenu(e, i)}
-                                onMouseMove={(e) => showTooltip(e.clientX, e.clientY, `Prostokąt #${i + 1}`)}
+                                onMouseMove={(e) => {
+                                    const r = rectangles[i];
+                                    showTooltip(
+                                        e.clientX,
+                                        e.clientY,
+                                        `Δx: ${r.relativeToCenter?.x} m, Δy: ${r.relativeToCenter?.y} m`
+                                    );
+                                }}
                                 onMouseLeave={hideTooltip}
                                 style={{
                                     position: 'absolute',
