@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type {Rectangle} from "../common/types/Rectangle.ts";
+import Panel from './Panel';
+
 const RectangleFittingVisualizer = () => {
     const [width, setWidth] = useState('');
     const [height, setHeight] = useState('');
@@ -99,13 +101,13 @@ const RectangleFittingVisualizer = () => {
         setContainerSize({ w: W, h: H });
     };
 
-    const toggleSelection = (index) => {
+    const toggleSelection = (index: number) => {
         const updated = [...rectangles];
         updated[index].selected = !updated[index].selected;
         setRectangles(updated);
     };
 
-    const handleContextMenu = (e, i) => {
+    const handleContextMenu = (e, i:number) => {
         e.preventDefault();
 
         const panel = rectangles[i];
@@ -117,7 +119,7 @@ const RectangleFittingVisualizer = () => {
     };
 
 
-    const showTooltip = (clientX, clientY, text) => {
+    const showTooltip = (clientX: number, clientY: number, text: string) => {
         setTooltip({
             visible: true,
             x: clientX + 10,
@@ -174,11 +176,14 @@ const RectangleFittingVisualizer = () => {
                         onContextMenu={(e) => e.preventDefault()}
                     >
                         {rectangles.map((rect, i) => (
-                            <div
+                            <Panel
                                 key={i}
-                                onClick={() => toggleSelection(i)}
-                                onContextMenu={(e) => handleContextMenu(e, i)}
-                                onMouseMove={(e) => {
+                                rect={rect}
+                                index={i}
+                                scaleFactor={scaleFactor}
+                                toggleSelection={toggleSelection}
+                                onContextMenu={handleContextMenu}
+                                onMouseMove={(e, i) => {
                                     const r = rectangles[i];
                                     showTooltip(
                                         e.clientX,
@@ -187,20 +192,10 @@ const RectangleFittingVisualizer = () => {
 Lat: ${r.gps?.lat}, Lon: ${r.gps?.lon}`
                                     );
                                 }}
-
                                 onMouseLeave={hideTooltip}
-                                style={{
-                                    position: 'absolute',
-                                    left: rect.x * scaleFactor,
-                                    top: rect.y * scaleFactor,
-                                    width: smallRect.width * scaleFactor,
-                                    height: smallRect.height * scaleFactor,
-                                    backgroundColor: rect.selected ? '#4CAF50' : '#2196F3',
-                                    border: '1px solid #333',
-                                    cursor: 'pointer',
-                                }}
                             />
                         ))}
+
 
                         {tooltip.visible && (
                             <div
