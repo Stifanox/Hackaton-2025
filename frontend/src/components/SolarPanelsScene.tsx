@@ -2,30 +2,6 @@ import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-/**
- * Komponent Reacta (TypeScript) renderujący cztery panele fotowoltaiczne w rzędzie za pomocą Three.js.
- *
- * Jak użyć:
- * 1. Upewnij się, że masz zainstalowany pakiet Three.js:
- *    npm install three
- *
- * 2. Skopiuj ten plik jako SolarPanelsScene.tsx w swoim projekcie React.
- *
- * 3. W pliku, w którym chcesz osadzić scenę, zaimportuj i użyj komponent:
- *    import SolarPanelsScene from './ścieżka/do/SolarPanelsScene';
- *
- *    function App() {
- *      return (
- *        <div style={{ width: '100vw', height: '100vh' }}>
- *          <SolarPanelsScene />
- *        </div>
- *      );
- *    }
- *
- * 4. Upewnij się, że kontener, w którym jest komponent, ma określone wymiary (np. 100vw/100vh),
- *    żeby renderer mógł zająć cały obszar.
- */
-
 const SolarPanelsScene: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   let renderer: THREE.WebGLRenderer;
@@ -37,7 +13,6 @@ const SolarPanelsScene: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 1. INITIALIZACJA RENDERERA
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(
