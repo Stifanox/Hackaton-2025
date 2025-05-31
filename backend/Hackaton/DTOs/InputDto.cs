@@ -18,7 +18,8 @@ public class InputDto
     
     public bool? UseHorizon { get; set; }
     public string? MountingPlace { get; set; }
-    public int? FixedAngle { get; set; }
+    public bool? Fixed { get; set; }
+    public int? Angle { get; set; }
     public bool? OptimalAngles { get; set; }
     public string? OutputFormat { get; set; }
 }
