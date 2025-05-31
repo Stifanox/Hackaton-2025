@@ -50,15 +50,27 @@ public class PvController : ControllerBase
         
         
         using var document = JsonDocument.Parse(content);
-        if (document.RootElement.TryGetProperty("outputs", out var outputsElement))
+
+        if (document.RootElement.TryGetProperty("outputs", out var outputsElement) 
+            && document.RootElement.TryGetProperty("inputs", out var inputsElement)
+            && inputsElement.TryGetProperty("mounting_system", out var mountingSystemElement))
         {
             string outputsJson = outputsElement.GetRawText();
-            var data = JsonSerializer.Deserialize<object>(outputsJson);
-            return Ok(new SuccessResponse<object>(data: data));
+            string mountingSystemJson = mountingSystemElement.GetRawText();
+            
+            var outputsObj = JsonSerializer.Deserialize<object>(outputsJson);
+            var mountingSystemObj = JsonSerializer.Deserialize<object>(mountingSystemJson);
+
+            var responseData = new
+            {
+                outputs = outputsObj,
+                mounting_system = mountingSystemObj
+            };
+
+            return Ok(new SuccessResponse<object>(data: responseData));
         }
 
-        return BadRequest(new ErrorResponse<string>(422,"Brak pola 'outputs' w odpowiedzi API"));
-
+        return BadRequest(new ErrorResponse<string>(422, "Brak pola 'outputs' lub 'mounting_system' w odpowiedzi API"));
        
         
     }
