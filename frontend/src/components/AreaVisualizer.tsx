@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import type { Rectangle } from "../common/types/Rectangle.ts";
 import LeftPanel from "./LeftPanel.tsx";
-import Panel from './Panel';
+import SendButton from "./SendButton";
 
+import Panel from './Panel';
+import {useApiRequest} from "../common/requester/useApiRequest.ts";
+import type {ProfileQueryParams} from "../common/types/QueryParams.ts";
+import {action_get_profile_data} from "../common/actions.ts";
 const RectangleFittingVisualizer = () => {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+    const [peakPower, setPeakPower] = useState<number>(0);
+    const [systemLoss, setSystemLoss] = useState<number>(0);
+    const [panelResults, setPanelResults] = useState<Record<number, any>>({});
   const [tooltip, setTooltip] = useState({
     visible: false,
     x: 0,
@@ -29,6 +36,11 @@ const RectangleFittingVisualizer = () => {
     //     const nextIndex = (currentIndex + 1) % directions.length;
     //     setDirection(directions[nextIndex]);
     // };
+    const { data, error, execute } = useApiRequest((params?: ProfileQueryParams) => {
+        if (!params) return Promise.reject('No params');
+
+        return action_get_profile_data(params);
+    });
 
     const calculate = (w: number, h: number, direction: Direction,centerLat: number, centerLon: number) => {
         // const centerLat = 50.02424640940002;
@@ -128,16 +140,60 @@ const RectangleFittingVisualizer = () => {
         const updated = [...rectangles];
         updated[index].selected = !updated[index].selected;
         setRectangles(updated);
+        const panel = updated[index];
+
+        if (panel.selected) {
+            console.log(peakPower)
+            // panel został zaznaczony – fetchujemy dane
+            execute({
+                latitude: panel.gps.lat,
+                longitude: panel.gps.lon,
+                peakPower,
+                systemLoss,
+            }).then((res) => {
+                setPanelResults(prev => ({
+                    ...prev,
+                    [index]: res,
+                }));
+            }).catch((err) => {
+                console.error("Błąd przy pobieraniu danych dla panelu:", err);
+            });
+        } else {
+            // panel odznaczony – usuwamy dane
+            setPanelResults(prev => {
+                const newResults = { ...prev };
+                delete newResults[index];
+                return newResults;
+            });
+        }
     };
+
+
 
     const handleContextMenu = (e, i:number) => {
         e.preventDefault();
 
         const panel = rectangles[i];
         if (panel?.gps) {
-            console.log(`🛰️ Panel #${i + 1} - GPS: ${panel.gps.lat}, ${panel.gps.lon}`);
+            execute({
+                latitude: panel.gps.lat,
+                longitude: panel.gps.lon,
+                peakPower,
+                systemLoss,
+            })
+                .then((res) => {
+                    if(data?.success){
+                        console.log("Response:", res);
+                        showTooltip(e.clientX, e.clientY, `Energia: ${res.data.outputs.totals.fixed.E_d} kWh`);
+                    }
 
+                })
+                .catch((err) => {
+                    console.error("❌ Błąd z API:", err);
+                    showTooltip(e.clientX, e.clientY, "Błąd zapytania");
+                });
         }
+
 
         showTooltip(e.clientX, e.clientY, `Prawy klik na prostokąt #${i + 1}`);
     };
@@ -168,40 +224,25 @@ const RectangleFittingVisualizer = () => {
         height: number,
         direction: Direction,
         latitude: number,
-        longitude: number
+        longitude: number,
+        peakPower: number,
+        systemLoss: number
     ) => {
+        console.log("🔧 Przyszły dane:", { peakPower, systemLoss });
         setWidth(width.toString());
         setHeight(height.toString());
         setDirection(direction);
-
-
+        setPeakPower(peakPower);
+        setSystemLoss(systemLoss);
         calculate(width, height, direction, latitude, longitude);
     };
+
 
 
     return (
         <>
         <div className="flex flex-row w-screen h-screen">
             <LeftPanel onSubmit={handleFormSubmit} />
-
-            {/*<div style={{ fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>*/}
-            {/*<h2>Kalkulator i wizualizacja</h2>*/}
-            {/*<div>*/}
-            {/*    <label>Szerokość (m): </label>*/}
-            {/*    <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} step="0.01" />*/}
-            {/*</div>*/}
-            {/*<div>*/}
-            {/*    <label>Wysokość (m): </label>*/}
-            {/*    <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} step="0.01" />*/}
-            {/*</div>*/}
-            {/*<div style={{ marginTop: '10px' }}>*/}
-            {/*    <button onClick={cycleDirection}>Kierunek: {direction.toUpperCase()}</button>*/}
-            {/*</div>*/}
-
-            {/*<button onClick={calculate} style={{ marginTop: '10px' }}>Oblicz i pokaż</button>*/}
-
-
-
             <div className="mt-5 relative flex-grow overflow-auto pb-32">
                 {rectangles.length > 0 && (
                     <div
@@ -230,7 +271,9 @@ const RectangleFittingVisualizer = () => {
                                 }}
                                 onMouseLeave={hideTooltip}
                             />
+
                         ))}
+                        <SendButton panelResults={panelResults} />
 
                         {tooltip.visible && (
                             <div
@@ -244,6 +287,7 @@ const RectangleFittingVisualizer = () => {
                             </div>
                         )}
                     </div>
+
                 )}
             </div>
 

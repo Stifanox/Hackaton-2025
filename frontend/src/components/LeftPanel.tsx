@@ -32,7 +32,9 @@ type Props = {
       height: number,
       direction: Direction,
       latitude: number,
-      longitude: number
+      longitude: number,
+      peakPower: number,
+      systemLoss: number
   ) => void;
 };
 
@@ -116,7 +118,9 @@ const LeftPanel: React.FC<Props> = ({ onSubmit }) => {
         Number(data.height),
         data.direction,
         Number(data.latitude),
-        Number(data.longitude)
+        Number(data.longitude),
+        Number(data.peakPower),
+        Number(data.systemLoss)
     );
 
 

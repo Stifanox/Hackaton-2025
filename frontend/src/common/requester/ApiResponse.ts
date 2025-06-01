@@ -47,8 +47,10 @@ type TotalsData = {
 }
 
 type PVData = {
-    monthly: MonthlyData
-    totals: TotalsData
+    outputs:{
+        monthly: MonthlyData
+        totals: TotalsData
+    }
 }
 
 type StatisticsData = {
@@ -66,4 +68,5 @@ export type {
     ErrorResponse,
     PVResponse,
     StatisticsResponse,
+    PVData
 }
