@@ -1,18 +1,17 @@
 using System.Reflection.Metadata;
 using Hackaton.Context;
 using Hackaton.Middlewares;
+using Hackaton.Services;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Companion;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 using Document = QuestPDF.Fluent.Document;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
-Document.Create(container =>
-{
-
-}).ShowInCompanion();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IPdfGenerator, PdfGenerator>();
 
 builder.Services.AddHttpClient("PVGIS", httpClient =>
 {
