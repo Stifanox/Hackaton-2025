@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import { FaAngleRight } from "react-icons/fa";
 import Features from "./Features";
+import {useNavigate} from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,7 +27,11 @@ const Home: React.FC = () => {
       },
     });
   });
+  const navigate = useNavigate();
 
+  const navigateToCreator = () =>{
+    navigate('/area')
+  }
   const handleTimeUpdate = (
     e: React.SyntheticEvent<HTMLVideoElement, Event>
   ) => {
@@ -36,6 +41,7 @@ const Home: React.FC = () => {
       video.play().catch(() => {});
     }
   };
+
 
   return (
     <>
@@ -61,7 +67,7 @@ const Home: React.FC = () => {
               Fredi KGB
             </h1>
           </div>
-          <button className=" absolute right-16 bottom-8 px-4 py-2 rounded-full bg-white font-semibold cursor-pointer flex gap-2 justify-center items-center">
+          <button onClick={navigateToCreator} className=" absolute right-16 bottom-8 px-4 py-2 rounded-full bg-white font-semibold cursor-pointer flex gap-2 justify-center items-center">
             Rozpocznij <FaAngleRight size={16} />
           </button>
         </div>

@@ -1,5 +1,5 @@
 import FeatureCard from "./FeatureCard";
-import { FaEdit } from "react-icons/fa";
+import {FaChartLine, FaEdit, FaFileExport, FaSolarPanel} from "react-icons/fa";
 
 const Features = () => {
   return (
@@ -16,19 +16,19 @@ const Features = () => {
           desc="Oferujemy kompleksowy zestaw funkcjonalności ułatwiających rozmieszczenie paneli na budynku"
         />
         <FeatureCard
-          icon={<FaEdit size={28} />}
-          title="Łatwość konfiguracji"
-          desc="Oferujemy kompleksowy zestaw funkcjonalności ułatwiających rozmieszczenie paneli na budynku"
+          icon={<FaSolarPanel size={28} />}
+          title="Inteligentne rozmieszczanie paneli"
+          desc="Automatyczne rozmieszczenie paneli fotowoltaicznych na dachu budynku z uwzględnieniem kształtu oraz kierunku"
         />
         <FeatureCard
-          icon={<FaEdit size={28} />}
-          title="Łatwość konfiguracji"
-          desc="Oferujemy kompleksowy zestaw funkcjonalności ułatwiających rozmieszczenie paneli na budynku"
+          icon={<FaChartLine size={28} />}
+          title="Statystyki uzysków energii"
+          desc="Generowanie przejrzystych wykresów miesięcznych i rocznych na podstawie symulacji działania instalacji PV."
         />
         <FeatureCard
-          icon={<FaEdit size={28} />}
-          title="Łatwość konfiguracji"
-          desc="Oferujemy kompleksowy zestaw funkcjonalności ułatwiających rozmieszczenie paneli na budynku"
+          icon={<FaFileExport size={28} />}
+          title="Eksport wyników"
+          desc="Eksportuj konfigurację i statystyki do formatu PDF, aby łatwo współdzielić projekty z klientami lub zespołem."
         />
       </div>
     </div>
