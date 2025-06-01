@@ -7,6 +7,8 @@ import Panel from './Panel';
 import {useApiRequest} from "../common/requester/useApiRequest.ts";
 import type {ProfileQueryParams} from "../common/types/QueryParams.ts";
 import {action_get_profile_data} from "../common/actions.ts";
+import Chat from "./Chat.tsx";
+
 const RectangleFittingVisualizer = () => {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
@@ -22,13 +24,21 @@ const RectangleFittingVisualizer = () => {
     text: "",
   });
 
-
-    const smallRect = { width: 1, height: 2 };
-    const edgeMargin = 0.3;
-    const spacing = 0.15;
-    const scaleFactor = 100; // 1m = 100px
-    const directions = ['north','NE', 'east','SE', 'south','SW', 'west', 'NW'] as const;
-    type Direction = typeof directions[number];
+  const smallRect = { width: 1, height: 2 };
+  const edgeMargin = 0.3;
+  const spacing = 0.15;
+  const scaleFactor = 100; // 1m = 100px
+  const directions = [
+    "north",
+    "NE",
+    "east",
+    "SE",
+    "south",
+    "SW",
+    "west",
+    "NW",
+  ] as const;
+  type Direction = (typeof directions)[number];
 
     const [direction, setDirection] = useState<Direction>('north');
     // const cycleDirection = () => {
@@ -42,23 +52,29 @@ const RectangleFittingVisualizer = () => {
         return action_get_profile_data(params);
     });
 
-    const calculate = (w: number, h: number, direction: Direction,centerLat: number, centerLon: number) => {
-        // const centerLat = 50.02424640940002;
-        // const centerLon = 19.91677561148512;
+  const calculate = (
+    w: number,
+    h: number,
+    direction: Direction,
+    centerLat: number,
+    centerLon: number
+  ) => {
+    // const centerLat = 50.02424640940002;
+    // const centerLon = 19.91677561148512;
 
-        const directionAngles: Record<Direction, number> = {
-            north: 0,
-            NE: 45,
-            east: 90,
-            SE: 135,
-            south: 180,
-            SW: 225,
-            west: 270,
-            NW: 315,
-        };
+    const directionAngles: Record<Direction, number> = {
+      north: 0,
+      NE: 45,
+      east: 90,
+      SE: 135,
+      south: 180,
+      SW: 225,
+      west: 270,
+      NW: 315,
+    };
 
-        const W = w;
-        const H = h;
+    const W = w;
+    const H = h;
 
     if (isNaN(W) || isNaN(H) || W <= 0 || H <= 0) {
       setRectangles([]);
@@ -75,60 +91,64 @@ const RectangleFittingVisualizer = () => {
       (usableHeight + spacing) / (smallRect.height + spacing)
     );
 
-        const totalWidth = countX * smallRect.width + (countX - 1) * spacing;
-        const totalHeight = countY * smallRect.height + (countY - 1) * spacing;
+    const totalWidth = countX * smallRect.width + (countX - 1) * spacing;
+    const totalHeight = countY * smallRect.height + (countY - 1) * spacing;
 
-        const offsetX = (W - totalWidth) / 2;
-        const offsetY = (H - totalHeight) / 2;
+    const offsetX = (W - totalWidth) / 2;
+    const offsetY = (H - totalHeight) / 2;
 
-        const newRectangles = [];
-        const mainCenterX = W / 2;
-        const mainCenterY = H / 2;
-        const angleDeg = directionAngles[direction];
-        const angleRad = angleDeg * Math.PI / 180;
-        const earthRadius = 6378137;
+    const newRectangles = [];
+    const mainCenterX = W / 2;
+    const mainCenterY = H / 2;
+    const angleDeg = directionAngles[direction];
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const earthRadius = 6378137;
 
-        for (let y = 0; y < countY; y++) {
-            for (let x = 0; x < countX; x++) {
-                const xPos = offsetX + x * (smallRect.width + spacing);
-                const yPos = offsetY + y * (smallRect.height + spacing);
+    for (let y = 0; y < countY; y++) {
+      for (let x = 0; x < countX; x++) {
+        const xPos = offsetX + x * (smallRect.width + spacing);
+        const yPos = offsetY + y * (smallRect.height + spacing);
 
-                const centerX = xPos + smallRect.width / 2;
-                const centerY = yPos + smallRect.height / 2;
+        const centerX = xPos + smallRect.width / 2;
+        const centerY = yPos + smallRect.height / 2;
 
-                const deltaX = centerX - mainCenterX;
-                const deltaY = centerY - mainCenterY;
+        const deltaX = centerX - mainCenterX;
+        const deltaY = centerY - mainCenterY;
 
-                // Obrót względem kierunku
-                const rotatedX = deltaX * Math.cos(angleRad) - deltaY * Math.sin(angleRad);
-                const rotatedY = deltaX * Math.sin(angleRad) + deltaY * Math.cos(angleRad);
+        // Obrót względem kierunku
+        const rotatedX =
+          deltaX * Math.cos(angleRad) - deltaY * Math.sin(angleRad);
+        const rotatedY =
+          deltaX * Math.sin(angleRad) + deltaY * Math.cos(angleRad);
 
-                // GPS z obrotem
-                const latOffset = rotatedY / earthRadius * (180 / Math.PI);
-                const lonOffset = rotatedX / (earthRadius * Math.cos(centerLat * Math.PI / 180)) * (180 / Math.PI);
+        // GPS z obrotem
+        const latOffset = (rotatedY / earthRadius) * (180 / Math.PI);
+        const lonOffset =
+          (rotatedX / (earthRadius * Math.cos((centerLat * Math.PI) / 180))) *
+          (180 / Math.PI);
 
-                const gpsLat = centerLat + latOffset;
-                const gpsLon = centerLon + lonOffset;
+        const gpsLat = centerLat + latOffset;
+        const gpsLon = centerLon + lonOffset;
 
-                newRectangles.push({
-                    x: xPos,
-                    y: yPos,
-                    selected: false,
-                    center: {
-                        x: centerX,
-                        y: centerY,
-                    },
-                    relativeToCenter: {
-                        x: parseFloat(deltaX.toFixed(3)),
-                        y: parseFloat(deltaY.toFixed(3)),
-                    },
-                    gps: {
-                        lat: parseFloat(gpsLat.toFixed(8)),
-                        lon: parseFloat(gpsLon.toFixed(8)),
-                    },
-                });
-            }
-        }
+        newRectangles.push({
+          x: xPos,
+          y: yPos,
+          selected: false,
+          center: {
+            x: centerX,
+            y: centerY,
+          },
+          relativeToCenter: {
+            x: parseFloat(deltaX.toFixed(3)),
+            y: parseFloat(deltaY.toFixed(3)),
+          },
+          gps: {
+            lat: parseFloat(gpsLat.toFixed(8)),
+            lon: parseFloat(gpsLon.toFixed(8)),
+          },
+        });
+      }
+    }
 
     setRectangles(newRectangles);
     setContainerSize({ w: W, h: H });
@@ -170,8 +190,8 @@ const RectangleFittingVisualizer = () => {
 
 
 
-    const handleContextMenu = (e, i:number) => {
-        e.preventDefault();
+  const handleContextMenu = (e, i: number) => {
+    e.preventDefault();
 
         const panel = rectangles[i];
         if (panel?.gps) {
@@ -195,18 +215,17 @@ const RectangleFittingVisualizer = () => {
         }
 
 
-        showTooltip(e.clientX, e.clientY, `Prawy klik na prostokąt #${i + 1}`);
-    };
+    showTooltip(e.clientX, e.clientY, `Prawy klik na prostokąt #${i + 1}`);
+  };
 
-
-    const showTooltip = (clientX: number, clientY: number, text: string) => {
-        setTooltip({
-            visible: true,
-            x: clientX + 10,
-            y: clientY + 10,
-            text,
-        });
-    };
+  const showTooltip = (clientX: number, clientY: number, text: string) => {
+    setTooltip({
+      visible: true,
+      x: clientX + 10,
+      y: clientY + 10,
+      text,
+    });
+  };
 
   const hideTooltip = () => {
     setTooltip({ ...tooltip, visible: false });
@@ -242,6 +261,7 @@ const RectangleFittingVisualizer = () => {
     return (
         <>
         <div className="flex flex-row w-screen h-screen">
+            <Chat />
             <LeftPanel onSubmit={handleFormSubmit} />
             <div className="mt-5 relative flex-grow overflow-auto pb-32">
                 {rectangles.length > 0 && (
