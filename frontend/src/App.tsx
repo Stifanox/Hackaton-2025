@@ -9,7 +9,7 @@ import Coordinates from "./pages/coordinates/Coordinates";
 import AreaVisualizer from "./components/AreaVisualizer";
 function App() {
   return (
-    <div>
+      <div className="flex flex-col min-h-screen">
       <Navbar />
       <Router>
         <Routes>

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Rectangle } from '../common/types/Rectangle.ts';
 
+
 type Props = {
     rect: Rectangle;
     index: number;
@@ -20,9 +21,16 @@ const Panel: React.FC<Props> = ({
                                     onMouseMove,
                                     onMouseLeave,
                                 }) => {
+    // const {data,error,execute} = useApiRequest((data:ProfileQueryParams)=> {
+    //     return action_get_profile_data(data)
+    // })
+
     return (
         <div
-            onClick={() => toggleSelection(index)}
+            onClick={() => {
+
+                toggleSelection(index)
+            }}
             onContextMenu={(e) => onContextMenu(e, index)}
             onMouseMove={(e) => onMouseMove(e, index)}
             onMouseLeave={onMouseLeave}

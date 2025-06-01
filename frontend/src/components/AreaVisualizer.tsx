@@ -15,6 +15,7 @@ const RectangleFittingVisualizer = () => {
     text: "",
   });
 
+
     const smallRect = { width: 1, height: 2 };
     const edgeMargin = 0.3;
     const spacing = 0.15;
@@ -23,15 +24,15 @@ const RectangleFittingVisualizer = () => {
     type Direction = typeof directions[number];
 
     const [direction, setDirection] = useState<Direction>('north');
-    const cycleDirection = () => {
-        const currentIndex = directions.indexOf(direction);
-        const nextIndex = (currentIndex + 1) % directions.length;
-        setDirection(directions[nextIndex]);
-    };
+    // const cycleDirection = () => {
+    //     const currentIndex = directions.indexOf(direction);
+    //     const nextIndex = (currentIndex + 1) % directions.length;
+    //     setDirection(directions[nextIndex]);
+    // };
 
-    const calculate = () => {
-        const centerLat = 50.02424640940002;
-        const centerLon = 19.91677561148512;
+    const calculate = (w: number, h: number, direction: Direction,centerLat: number, centerLon: number) => {
+        // const centerLat = 50.02424640940002;
+        // const centerLon = 19.91677561148512;
 
         const directionAngles: Record<Direction, number> = {
             north: 0,
@@ -44,8 +45,8 @@ const RectangleFittingVisualizer = () => {
             NW: 315,
         };
 
-        const W = parseFloat(width);
-        const H = parseFloat(height);
+        const W = w;
+        const H = h;
 
     if (isNaN(W) || isNaN(H) || W <= 0 || H <= 0) {
       setRectangles([]);
@@ -122,6 +123,7 @@ const RectangleFittingVisualizer = () => {
   };
 
 
+
     const toggleSelection = (index: number) => {
         const updated = [...rectangles];
         updated[index].selected = !updated[index].selected;
@@ -134,6 +136,7 @@ const RectangleFittingVisualizer = () => {
         const panel = rectangles[i];
         if (panel?.gps) {
             console.log(`🛰️ Panel #${i + 1} - GPS: ${panel.gps.lat}, ${panel.gps.lon}`);
+
         }
 
         showTooltip(e.clientX, e.clientY, `Prawy klik na prostokąt #${i + 1}`);
@@ -160,42 +163,52 @@ const RectangleFittingVisualizer = () => {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
+    const handleFormSubmit = (
+        width: number,
+        height: number,
+        direction: Direction,
+        latitude: number,
+        longitude: number
+    ) => {
+        setWidth(width.toString());
+        setHeight(height.toString());
+        setDirection(direction);
+
+
+        calculate(width, height, direction, latitude, longitude);
+    };
+
 
     return (
         <>
         <div className="flex flex-row w-screen h-screen">
-            <LeftPanel />
-            <div style={{ fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>
-            <h2>Kalkulator i wizualizacja</h2>
-            <div>
-                <label>Szerokość (m): </label>
-                <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} step="0.01" />
-            </div>
-            <div>
-                <label>Wysokość (m): </label>
-                <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} step="0.01" />
-            </div>
-            <div style={{ marginTop: '10px' }}>
-                <button onClick={cycleDirection}>Kierunek: {direction.toUpperCase()}</button>
-            </div>
+            <LeftPanel onSubmit={handleFormSubmit} />
 
-            <button onClick={calculate} style={{ marginTop: '10px' }}>Oblicz i pokaż</button>
+            {/*<div style={{ fontFamily: "Arial", maxWidth: "600px", margin: "auto" }}>*/}
+            {/*<h2>Kalkulator i wizualizacja</h2>*/}
+            {/*<div>*/}
+            {/*    <label>Szerokość (m): </label>*/}
+            {/*    <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} step="0.01" />*/}
+            {/*</div>*/}
+            {/*<div>*/}
+            {/*    <label>Wysokość (m): </label>*/}
+            {/*    <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} step="0.01" />*/}
+            {/*</div>*/}
+            {/*<div style={{ marginTop: '10px' }}>*/}
+            {/*    <button onClick={cycleDirection}>Kierunek: {direction.toUpperCase()}</button>*/}
+            {/*</div>*/}
 
-          {rectangles.length > 0 && (
-            <div style={{ marginTop: "15px", fontWeight: "bold" }}>
-              Zaznaczone prostokąty: {selectedCount}
-            </div>
-          )}
+            {/*<button onClick={calculate} style={{ marginTop: '10px' }}>Oblicz i pokaż</button>*/}
 
-            <div style={{ marginTop: '20px', position: 'relative' }}>
+
+
+            <div className="mt-5 relative flex-grow overflow-auto pb-32">
                 {rectangles.length > 0 && (
                     <div
+                        className="relative border-2 border-black bg-gray-100 mx-auto"
                         style={{
-                            position: 'relative',
                             width: containerSize.w * scaleFactor,
                             height: containerSize.h * scaleFactor,
-                            border: '2px solid black',
-                            backgroundColor: '#f9f9f9',
                         }}
                         onContextMenu={(e) => e.preventDefault()}
                     >
@@ -212,38 +225,30 @@ const RectangleFittingVisualizer = () => {
                                     showTooltip(
                                         e.clientX,
                                         e.clientY,
-                                        `Δx: ${r.relativeToCenter?.x} m, Δy: ${r.relativeToCenter?.y} m
-Lat: ${r.gps?.lat}, Lon: ${r.gps?.lon}`
+                                        `Δx: ${r.relativeToCenter?.x} m, Δy: ${r.relativeToCenter?.y} m\nLat: ${r.gps?.lat}, Lon: ${r.gps?.lon}`
                                     );
                                 }}
                                 onMouseLeave={hideTooltip}
                             />
                         ))}
 
-
-                {tooltip.visible && (
-                  <div
-                    style={{
-                      position: "fixed",
-                      left: tooltip.x,
-                      top: tooltip.y,
-                      background: "white",
-                      border: "1px solid #ccc",
-                      padding: "4px 8px",
-                      fontSize: "12px",
-                      boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-                      pointerEvents: "none",
-                      zIndex: 1000,
-                    }}
-                  >
-                    {tooltip.text}
-                  </div>
+                        {tooltip.visible && (
+                            <div
+                                className="fixed text-xs bg-white border border-gray-300 shadow px-2 py-1 pointer-events-none z-50"
+                                style={{
+                                    left: tooltip.x,
+                                    top: tooltip.y,
+                                }}
+                            >
+                                {tooltip.text}
+                            </div>
+                        )}
+                    </div>
                 )}
-              </div>
-            )}
-          </div>
+            </div>
+
         </div>
-        </div>
+
     </>
   );
 };

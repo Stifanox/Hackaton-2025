@@ -26,6 +26,16 @@ type Step1Values = {
   useHorizon: boolean;
   angle: number | null;
 };
+type Props = {
+  onSubmit: (
+      width: number,
+      height: number,
+      direction: Direction,
+      latitude: number,
+      longitude: number
+  ) => void;
+};
+
 
 type Step2Values = {
   width: number | null;
@@ -35,7 +45,8 @@ type Step2Values = {
 
 type FormValues = Step1Values & Step2Values;
 
-const LeftPanel = () => {
+const LeftPanel: React.FC<Props> = ({ onSubmit }) => {
+
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -100,6 +111,15 @@ const LeftPanel = () => {
   };
 
   const onFinalSubmit = (data: FormValues) => {
+    onSubmit(
+        Number(data.width),
+        Number(data.height),
+        data.direction,
+        Number(data.latitude),
+        Number(data.longitude)
+    );
+
+
     console.log("Zawartość formularza po obu krokach:", data);
     setOpen(false);
   };

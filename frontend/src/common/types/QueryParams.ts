@@ -1,8 +1,8 @@
 type ProfileQueryParams = {
     latitude: number
     longitude: number
-    peakPower:number
-    systemLoss: number
+    peakPower?:number
+    systemLoss?: number
     useHorizon?:boolean
     mountingPlace?: "free" | "building"
     fixed?: boolean
