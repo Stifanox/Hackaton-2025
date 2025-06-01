@@ -8,6 +8,7 @@ import {useApiRequest} from "../common/requester/useApiRequest.ts";
 import type {ProfileQueryParams} from "../common/types/QueryParams.ts";
 import {action_get_profile_data} from "../common/actions.ts";
 import Chat from "./Chat.tsx";
+import {DownloadPdfButton} from "./DownloadPdfButton.tsx";
 
 const RectangleFittingVisualizer = () => {
   const [width, setWidth] = useState("");
@@ -294,6 +295,7 @@ const RectangleFittingVisualizer = () => {
 
                         ))}
                         <SendButton panelResults={panelResults} />
+                        <DownloadPdfButton panelResults={panelResults} />
 
                         {tooltip.visible && (
                             <div

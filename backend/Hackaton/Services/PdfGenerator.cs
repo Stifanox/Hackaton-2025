@@ -21,28 +21,28 @@ public class PdfGenerator : IPdfGenerator
         .Select(g => new
         {
             Month = g.Key,
-            Ed = g.Average(x => x.Ed),
-            Em = g.Average(x => x.Em),
-            Hid = g.Average(x => x.Hid),
-            Sdm = g.Average(x => x.Sdm)
+            Ed = g.Sum(x => x.Ed),
+            Em = g.Sum(x => x.Em),
+            Hid = g.Sum(x => x.Hid),
+            Sdm = g.Sum(x => x.Sdm)
         })
         .OrderBy(x => x.Month)
         .ToList();
     
     var totalAverage = new
     {
-        Ed = model.TotalData.Average(x => x.Ed),
-        Em = model.TotalData.Average(x => x.Em),
-        Ey = model.TotalData.Average(x => x.Ey),
-        Hid = model.TotalData.Average(x => x.Hid),
-        Him = model.TotalData.Average(x => x.Him),
-        Hiy = model.TotalData.Average(x => x.Hiy),
-        Sdm = model.TotalData.Average(x => x.Sdm),
-        Sdy = model.TotalData.Average(x => x.Sdy),
-        Laoi = model.TotalData.Average(x => x.laoi),
-        Lspec = model.TotalData.Average(x => x.lspec),
-        Ltg = model.TotalData.Average(x => x.ltg),
-        Ltotal = model.TotalData.Average(x => x.ltotal),
+        Ed = model.TotalData.Sum(x => x.Ed),
+        Em = model.TotalData.Sum(x => x.Em),
+        Ey = model.TotalData.Sum(x => x.Ey),
+        Hid = model.TotalData.Sum(x => x.Hid),
+        Him = model.TotalData.Sum(x => x.Him),
+        Hiy = model.TotalData.Sum(x => x.Hiy),
+        Sdm = model.TotalData.Sum(x => x.Sdm),
+        Sdy = model.TotalData.Sum(x => x.Sdy),
+        Laoi = model.TotalData.Sum(x => x.laoi),
+        Lspec = model.TotalData.Sum(x => x.lspec),
+        Ltg = model.TotalData.Sum(x => x.ltg),
+        Ltotal = model.TotalData.Sum(x => x.ltotal),
     };
 
     var document = Document.Create(container =>

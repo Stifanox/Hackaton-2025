@@ -1,21 +1,15 @@
 import React from "react";
 import type {PVResponse, SuccessResponse, PVData} from "../common/requester/ApiResponse.ts";
 import {useApiRequest} from "../common/requester/useApiRequest";
-import {action_get_statistics_data} from "../common/actions";
+import {action_get_raport_data, action_get_statistics_data} from "../common/actions";
 import type {StatisticsPayload} from "../common/requester/Payload.ts";
 
 type SendButtonProps = {
     panelResults: SuccessResponse<PVData>[];
 };
 
-const SendButton: React.FC<SendButtonProps> = ({panelResults}) => {
-    const {data, error, execute} = useApiRequest((data: StatisticsPayload) => {
-        return action_get_statistics_data(data)
-    }, {
-        onSuccess: (data) => {
+const DownloadPdfButton: React.FC<SendButtonProps> = ({panelResults}) => {
 
-        }
-    });
 
     const handleSend = () => {
         const payload = Object.entries(panelResults).map(([panelIndex, panel]) => {
@@ -56,11 +50,26 @@ const SendButton: React.FC<SendButtonProps> = ({panelResults}) => {
             totalData: payload.map(item => item.totalData)
         }
 
-        execute(payloadFixed);
+        action_get_raport_data(payloadFixed).
+        then((response) => {
+            const data = window.URL.createObjectURL(response);
 
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = 'raport.pdf';
+            link.dispatchEvent(
+                new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                })
+            );
 
-        console.log("📤 Gotowy payload do wysłania:", payloadFixed);
-
+            setTimeout(() => {
+                window.URL.revokeObjectURL(data);
+                link.remove();
+            }, 100);
+        });
     };
 
     return (
@@ -69,9 +78,9 @@ const SendButton: React.FC<SendButtonProps> = ({panelResults}) => {
             className="bg-lime-600 hover:bg-lime-500 text-white px-4 py-2 rounded my-4"
             disabled={Object.keys(panelResults).length === 0}
         >
-            Wyślij {Object.keys(panelResults).length} paneli
+            Pobierz raport
         </button>
     );
 };
 
-export default SendButton;
+export {DownloadPdfButton};

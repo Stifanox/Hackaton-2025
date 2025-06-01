@@ -90,26 +90,26 @@ public class PvController : ControllerBase
             .Select(g => new MonthAverageData
             {
                 month = g.Key,
-                ed = g.Average(item => item.Ed),
-                em = g.Average(item => item.Em),
-                hid = g.Average(item => item.Hid),
-                sdm = g.Average(item => item.Sdm),
+                ed = g.Sum(item => item.Ed),
+                em = g.Sum(item => item.Em),
+                hid = g.Sum(item => item.Hid),
+                sdm = g.Sum(item => item.Sdm),
             }).ToList();
 
         var dataByTotal = new TotalAverageData
         {
-            ed = input.TotalData.Average(item => item.Ed),
-            em = input.TotalData.Average(item => item.Em),
-            ey= input.TotalData.Average(item => item.Ey),
-            hid= input.TotalData.Average(item => item.Hid),
-            him= input.TotalData.Average(item => item.Him),
-            hiy= input.TotalData.Average(item => item.Hiy),
-            sdm= input.TotalData.Average(item => item.Sdm),
-            sdy= input.TotalData.Average(item => item.Sdy),
-            laoi= input.TotalData.Average(item => item.laoi),
-            lspec = input.TotalData.Average(item => item.lspec),
-            ltg = input.TotalData.Average(item => item.ltg),
-            ltotal = input.TotalData.Average(item => item.ltotal),
+            ed = input.TotalData.Sum(item => item.Ed),
+            em = input.TotalData.Sum(item => item.Em),
+            ey= input.TotalData.Sum(item => item.Ey),
+            hid= input.TotalData.Sum(item => item.Hid),
+            him= input.TotalData.Sum(item => item.Him),
+            hiy= input.TotalData.Sum(item => item.Hiy),
+            sdm= input.TotalData.Sum(item => item.Sdm),
+            sdy= input.TotalData.Sum(item => item.Sdy),
+            laoi= input.TotalData.Sum(item => item.laoi),
+            lspec = input.TotalData.Sum(item => item.lspec),
+            ltg = input.TotalData.Sum(item => item.ltg),
+            ltotal = input.TotalData.Sum(item => item.ltotal),
         };
 
         return Ok(new SuccessResponse<StatisticAverageData>(data: new StatisticAverageData

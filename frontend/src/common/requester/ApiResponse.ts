@@ -61,6 +61,7 @@ type StatisticsData = {
 type ApiResponse<T> = Promise<SuccessResponse<T> | ErrorResponse>
 type PVResponse = ApiResponse<PVData>
 type StatisticsResponse = ApiResponse<StatisticsData>
+type BlobResponse = Promise<Blob>
 
 export type {
     ApiResponse,
@@ -68,5 +69,7 @@ export type {
     ErrorResponse,
     PVResponse,
     StatisticsResponse,
-    PVData
+    PVData,
+    StatisticsData,
+    BlobResponse
 }
