@@ -10,136 +10,137 @@ public class PdfGenerator : IPdfGenerator
 {
     public byte[] GenerateInvoicePdf(InvoiceModel model)
     {
-        return new byte[0]; // Placeholder
+        return new byte[0];
     }
 
-    public byte[] GenerateStatisticsPdf(StatisticsDto model)
+   public byte[] GenerateStatisticsPdf(StatisticsDto model)
+{
+
+    var monthlyAverages = model.MonthlyData
+        .GroupBy(item => item.Month)
+        .Select(g => new
+        {
+            Month = g.Key,
+            Ed = g.Average(x => x.Ed),
+            Em = g.Average(x => x.Em),
+            Hid = g.Average(x => x.Hid),
+            Sdm = g.Average(x => x.Sdm)
+        })
+        .OrderBy(x => x.Month)
+        .ToList();
+    
+    var totalAverage = new
     {
-        var dataByMonth = model.MonthlyData
-            .GroupBy(item => item.Month)
-            .Select(g => new MonthAverageData
-            {
-                month = g.Key,
-                ed = g.Average(item => item.Ed),
-                em = g.Average(item => item.Em),
-                hid = g.Average(item => item.Hid),
-                sdm = g.Average(item => item.Sdm),
-            }).ToList();
+        Ed = model.TotalData.Average(x => x.Ed),
+        Em = model.TotalData.Average(x => x.Em),
+        Ey = model.TotalData.Average(x => x.Ey),
+        Hid = model.TotalData.Average(x => x.Hid),
+        Him = model.TotalData.Average(x => x.Him),
+        Hiy = model.TotalData.Average(x => x.Hiy),
+        Sdm = model.TotalData.Average(x => x.Sdm),
+        Sdy = model.TotalData.Average(x => x.Sdy),
+        Laoi = model.TotalData.Average(x => x.laoi),
+        Lspec = model.TotalData.Average(x => x.lspec),
+        Ltg = model.TotalData.Average(x => x.ltg),
+        Ltotal = model.TotalData.Average(x => x.ltotal),
+    };
 
-        var dataByTotal = new TotalAverageData
-        {
-            ed = model.TotalData.Average(item => item.Ed),
-            em = model.TotalData.Average(item => item.Em),
-            ey = model.TotalData.Average(item => item.Ey),
-            hid = model.TotalData.Average(item => item.Hid),
-            him = model.TotalData.Average(item => item.Him),
-            hiy = model.TotalData.Average(item => item.Hiy),
-            sdm = model.TotalData.Average(item => item.Sdm),
-            sdy = model.TotalData.Average(item => item.Sdy),
-            laoi = model.TotalData.Average(item => item.laoi),
-            lspec = model.TotalData.Average(item => item.lspec),
-            ltg = model.TotalData.Average(item => item.ltg),
-            ltotal = model.TotalData.Average(item => item.ltotal),
-        };
-
-        var averageData = new StatisticAverageData
-        {
-            monthlyAverage = dataByMonth,
-            totalAverage = dataByTotal
-        };
-
-        return GenerateStatisticsPdf(averageData); // delegacja do drugiej metody
-    }
-
-    public byte[] GenerateStatisticsPdf(StatisticAverageData data)
+    var document = Document.Create(container =>
     {
-        var document = Document.Create(container =>
+        container.Page(page =>
         {
-            container.Page(page =>
+            page.Margin(40);
+            page.Size(PageSizes.A4);
+
+            page.Header()
+                .Text("Raport statystyczny")
+                .FontSize(22)
+                .Bold()
+                .AlignCenter();
+
+            page.Content().PaddingVertical(10).Column(column =>
             {
-                page.Margin(40);
-                page.Size(PageSizes.A4);
-
-                page.Header()
-                    .Text("Statistics Report")
-                    .FontSize(22)
-                    .Bold()
-                    .AlignCenter();
-
-                page.Content().PaddingVertical(10).Column(column =>
+                column.Spacing(15);
+                
+                column.Item().Text("Średnie miesięczne").FontSize(16).Bold();
+                column.Item().PaddingBottom(5).Table(table =>
                 {
-                    column.Spacing(15);
-
-                    column.Item().Text("Monthly Averages").FontSize(16).Bold();
-                    column.Item().Table(table =>
+                    table.ColumnsDefinition(columns =>
                     {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.ConstantColumn(60);
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                        });
-
-                        table.Header(header =>
-                        {
-                            header.Cell().Text("Month").Bold();
-                            header.Cell().Text("Ed").Bold();
-                            header.Cell().Text("Em").Bold();
-                            header.Cell().Text("Hid").Bold();
-                            header.Cell().Text("Sdm").Bold();
-                        });
-
-                        foreach (var item in data.monthlyAverage.OrderBy(m => m.month))
-                        {
-                            table.Cell().Text(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.month));
-                            table.Cell().Text(item.ed.ToString("F2"));
-                            table.Cell().Text(item.em.ToString("F2"));
-                            table.Cell().Text(item.hid.ToString("F2"));
-                            table.Cell().Text(item.sdm.ToString("F2"));
-                        }
+                        columns.ConstantColumn(60);
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
                     });
 
-                    column.Item().PaddingTop(20).Text("Total Averages").FontSize(16).Bold();
-
-                    column.Item().Table(table =>
+                    table.Header(header =>
                     {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                        });
-
-                        void AddRow(string label, double value)
-                        {
-                            table.Cell().Text(label);
-                            table.Cell().Text(value.ToString("F2"));
-                        }
-
-                        var t = data.totalAverage;
-
-                        AddRow("Ed", t.ed);
-                        AddRow("Em", t.em);
-                        AddRow("Ey", t.ey);
-                        AddRow("Hid", t.hid);
-                        AddRow("Him", t.him);
-                        AddRow("Hiy", t.hiy);
-                        AddRow("Sdm", t.sdm);
-                        AddRow("Sdy", t.sdy);
-                        AddRow("Laoi", t.laoi);
-                        AddRow("Lspec", t.lspec);
-                        AddRow("Ltg", t.ltg);
-                        AddRow("Ltotal", t.ltotal);
+                        header.Cell().PaddingBottom(10).Text("Miesiąc").Bold();
+                        header.Cell().PaddingBottom(10).Text("Średnia dzienna produkcja").Bold().AlignCenter();
+                        header.Cell().PaddingBottom(10).Text("Średnia miesięczna produkcja").Bold().AlignCenter();
+                        header.Cell().PaddingBottom(10).Text("Średnie dzienne napromieniowanie").Bold().AlignCenter();
+                        header.Cell().PaddingBottom(10).Text("Odchylenie standardowe miesięczne").Bold().AlignCenter();
                     });
+
+                    foreach (var item in monthlyAverages)
+                    {
+                        table.Cell().Text(new System.Globalization.CultureInfo("pl-PL").DateTimeFormat.GetMonthName(item.Month));
+                        table.Cell().PaddingBottom(5).Text(item.Ed.ToString("F2")).AlignCenter();
+                        table.Cell().PaddingBottom(5).Text(item.Em.ToString("F2")).AlignCenter();
+                        table.Cell().PaddingBottom(5).Text(item.Hid.ToString("F2")).AlignCenter();
+                        table.Cell().PaddingBottom(5).Text(item.Sdm.ToString("F2")).AlignCenter();
+                    }
                 });
+                
+                column.Item().PaddingTop(20).Text("Średnie totalne").FontSize(16).Bold();
+                column.Item().Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(30);
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
+                    });
 
-                page.Footer()
-                    .AlignCenter()
-                    .Text("Generated by Hackaton Platform – QuestPDF");
+                    table.Header(header =>
+                    {
+                        header.Cell().PaddingBottom(10).Text("#").Bold();
+                        header.Cell().PaddingBottom(10).Text("Opis").Bold();
+                        header.Cell().PaddingBottom(10).Text("Wartość").Bold().AlignRight();
+                    });
+
+                    void AddRow(int index, string label, double value)
+                    {
+                        table.Cell().Text(index.ToString());
+                        table.Cell().PaddingBottom(5).Text(label);
+                        table.Cell().PaddingBottom(5).Text(value.ToString("F2")).AlignRight();
+                    }
+
+                    int idx = 1;
+                    AddRow(idx++, "Średnia dzienna produkcja", totalAverage.Ed);
+                    AddRow(idx++, "Średnia miesięczna produkcja", totalAverage.Em);
+                    AddRow(idx++, "Średnia roczna produkcja", totalAverage.Ey);
+                    AddRow(idx++, "Średnie dzienne napromieniowanie", totalAverage.Hid);
+                    AddRow(idx++, "Średnie miesięczne napromieniowanie", totalAverage.Him);
+                    AddRow(idx++, "Średnie roczne napromieniowanie", totalAverage.Hiy);
+                    AddRow(idx++, "Odchylenie standardowe zmienności miesięcznej", totalAverage.Sdm);
+                    AddRow(idx++, "Odchylenie standardowe zmienności rok do roku", totalAverage.Sdy);
+                    AddRow(idx++, "Straty z płytkiego kąta padania światła", totalAverage.Laoi);
+                    AddRow(idx++, "Straty z widma promieniowania słonecznego", totalAverage.Lspec);
+                    AddRow(idx++, "Straty z niskiego natężenia promieniowania", totalAverage.Ltg);
+                    AddRow(idx++, "Całkowite straty", totalAverage.Ltotal);
+                });
             });
-        });
 
-        return document.GeneratePdf();
-    }
+            page.Footer()
+                .AlignCenter()
+                .Text("Generated by Hackaton Platform – QuestPDF");
+        });
+    });
+
+    return document.GeneratePdf();
+}
+
+
 }
