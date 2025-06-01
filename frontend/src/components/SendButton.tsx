@@ -63,7 +63,7 @@ const SendButton: React.FC<SendButtonProps> = ({ panelResults, onSend }) => {
       className="bg-lime-600 hover:bg-lime-500 text-white px-4 py-2 rounded my-4"
       disabled={Object.keys(panelResults).length === 0}
     >
-      Wyślij {Object.keys(panelResults).length} paneli
+      Wygeneruj dane
     </button>
   );
 };
