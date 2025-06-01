@@ -1,4 +1,6 @@
-﻿using Hackaton.Services;
+﻿using Hackaton.DTOs;
+using Hackaton.DTOs.FormattedStatistics;
+using Hackaton.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -12,14 +14,14 @@ public class PdfApiController : ControllerBase
         _pdfGenerator = pdfGenerator;
     }
 
-    [HttpPost("invoice")]
-    public IActionResult GenerateInvoicePdf([FromBody] InvoiceModel model)
+    [HttpPost("statistics")]
+    public IActionResult GenerateStatisticsPdf([FromBody] StatisticAverageData model)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var pdfBytes = _pdfGenerator.GenerateInvoicePdf(model);
+        var pdfBytes = _pdfGenerator.GenerateStatisticsPdf(model);
 
-        return File(pdfBytes, "application/pdf", "invoice.pdf");
+        return File(pdfBytes, "application/pdf", "statistics-report.pdf");
     }
 }
