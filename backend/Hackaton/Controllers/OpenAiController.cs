@@ -17,13 +17,13 @@ public class OpenAiController: ControllerBase
     }
 
     [HttpPost("get-response")]
-    public async Task<IActionResult> OpenAi([FromBody] MessageInput message)
+    public async Task<IActionResult> OpenAi([FromBody] MessageInput input)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
             return BadRequest(new ErrorResponse<string>(data:"Message not provided"));
         }
-        var result = await _openAiService.AskChatAsync("test");
+        var result = await _openAiService.AskChatAsync(input.Message);
 
         return Ok(new SuccessResponse<string>(data:result));
     }

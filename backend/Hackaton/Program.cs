@@ -7,12 +7,12 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 using Document = QuestPDF.Fluent.Document;
 
-QuestPDF.Settings.License = LicenseType.Community;
-
-Document.Create(container =>
-{
-
-}).ShowInCompanion();
+// QuestPDF.Settings.License = LicenseType.Community;
+//
+// Document.Create(container =>
+// {
+//
+// }).ShowInCompanion();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +35,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
-
+builder.Services.AddSingleton<OpenAiService>();
 
 var app = builder.Build();
 
