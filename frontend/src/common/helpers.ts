@@ -11,4 +11,5 @@ const mapObjectToQueryParams = (queryParams:object):string => {
     return query
 }
 
+
 export {mapObjectToQueryParams}

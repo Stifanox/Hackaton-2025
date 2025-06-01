@@ -89,23 +89,23 @@ public class PvController : ControllerBase
             .GroupBy(item => item.Month)
             .Select(g => new MonthAverageData
             {
-                Month = g.Key,
-                Ed = g.Average(item => item.Ed),
-                Em = g.Average(item => item.Em),
-                Hid = g.Average(item => item.Hid),
-                Sdm = g.Average(item => item.Sdm),
+                month = g.Key,
+                ed = g.Average(item => item.Ed),
+                em = g.Average(item => item.Em),
+                hid = g.Average(item => item.Hid),
+                sdm = g.Average(item => item.Sdm),
             }).ToList();
 
         var dataByTotal = new TotalAverageData
         {
-            Ed = input.TotalData.Average(item => item.Ed),
-            Em = input.TotalData.Average(item => item.Em),
-            Ey= input.TotalData.Average(item => item.Ey),
-            Hid= input.TotalData.Average(item => item.Hid),
-            Him= input.TotalData.Average(item => item.Him),
-            Hiy= input.TotalData.Average(item => item.Hiy),
-            Sdm= input.TotalData.Average(item => item.Sdm),
-            Sdy= input.TotalData.Average(item => item.Sdy),
+            ed = input.TotalData.Average(item => item.Ed),
+            em = input.TotalData.Average(item => item.Em),
+            ey= input.TotalData.Average(item => item.Ey),
+            hid= input.TotalData.Average(item => item.Hid),
+            him= input.TotalData.Average(item => item.Him),
+            hiy= input.TotalData.Average(item => item.Hiy),
+            sdm= input.TotalData.Average(item => item.Sdm),
+            sdy= input.TotalData.Average(item => item.Sdy),
             laoi= input.TotalData.Average(item => item.laoi),
             lspec = input.TotalData.Average(item => item.lspec),
             ltg = input.TotalData.Average(item => item.ltg),
@@ -114,8 +114,8 @@ public class PvController : ControllerBase
 
         return Ok(new SuccessResponse<StatisticAverageData>(data: new StatisticAverageData
         {
-            MonthlyAverage = dataByMonth,
-            TotalAverage = dataByTotal,
+            monthlyAverage = dataByMonth,
+            totalAverage = dataByTotal,
         }));
     }
 }

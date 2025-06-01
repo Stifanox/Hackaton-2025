@@ -2,14 +2,14 @@ namespace Hackaton.DTOs.FormattedStatistics;
 
 public class TotalAverageData
 {
-    public double Ed { get; set; }
-    public double Em { get; set; }
-    public double Ey { get; set; }
-    public double Hid { get; set; }
-    public double Him { get; set; }
-    public double Hiy { get; set; }
-    public double Sdm { get; set; }
-    public double Sdy { get; set; }
+    public double ed { get; set; }
+    public double em { get; set; }
+    public double ey { get; set; }
+    public double hid { get; set; }
+    public double him { get; set; }
+    public double hiy { get; set; }
+    public double sdm { get; set; }
+    public double sdy { get; set; }
     public double laoi { get; set; }
     public double lspec { get; set; }
     public double ltg { get; set; }
