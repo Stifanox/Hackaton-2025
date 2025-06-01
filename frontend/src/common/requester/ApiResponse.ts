@@ -1,3 +1,6 @@
+import type {MonthlyData as MonthlyDataStats} from "./Payload.ts";
+import type {TotalData as TotalDataStats} from "./Payload.ts";
+
 type ErrorResponse = {
     success: false,
     status: number,
@@ -12,7 +15,7 @@ type SuccessResponse<T> = {
 }
 
 type MonthlyItemData = {
-    monthlyData: number,
+    month: number,
     E_d: number,
     E_m: number,
     "H(i)_d": number,
@@ -48,13 +51,19 @@ type PVData = {
     totals: TotalsData
 }
 
+type StatisticsData = {
+    monthlyAverage: MonthlyDataStats[]
+    totalAverage: TotalDataStats
+}
+
 type ApiResponse<T> = Promise<SuccessResponse<T> | ErrorResponse>
 type PVResponse = ApiResponse<PVData>
-
+type StatisticsResponse = ApiResponse<StatisticsData>
 
 export type {
     ApiResponse,
     SuccessResponse,
     ErrorResponse,
-    PVResponse
+    PVResponse,
+    StatisticsResponse,
 }

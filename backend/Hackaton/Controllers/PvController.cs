@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hackaton.DTOs;
 using Hackaton.Helpers;
 using System.Text.Json;
+using Hackaton.DTOs.FormattedStatistics;
 
 
 [ApiController]
@@ -12,10 +13,11 @@ using System.Text.Json;
 public class PvController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
-
-    public PvController(IHttpClientFactory httpClientFactory)
+    private readonly ILogger<PvController> _logger;
+    public PvController(IHttpClientFactory httpClientFactory, ILogger<PvController> logger)
     {
         _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     [HttpGet("GetInfo")]
@@ -76,4 +78,44 @@ public class PvController : ControllerBase
         
     }
 
+
+    [HttpPost("statistics")]
+    public async Task<IActionResult> Statistics([FromBody] StatisticsDto input)
+    {
+        if(input.MonthlyData.Count == 0 || input.TotalData.Count == 0)
+            return UnprocessableEntity(new ErrorResponse<string>(422, "Dane miesięczne bądź dane ogólne są puste"));
+
+        var dataByMonth = input.MonthlyData
+            .GroupBy(item => item.Month)
+            .Select(g => new MonthAverageData
+            {
+                month = g.Key,
+                ed = g.Average(item => item.Ed),
+                em = g.Average(item => item.Em),
+                hid = g.Average(item => item.Hid),
+                sdm = g.Average(item => item.Sdm),
+            }).ToList();
+
+        var dataByTotal = new TotalAverageData
+        {
+            ed = input.TotalData.Average(item => item.Ed),
+            em = input.TotalData.Average(item => item.Em),
+            ey= input.TotalData.Average(item => item.Ey),
+            hid= input.TotalData.Average(item => item.Hid),
+            him= input.TotalData.Average(item => item.Him),
+            hiy= input.TotalData.Average(item => item.Hiy),
+            sdm= input.TotalData.Average(item => item.Sdm),
+            sdy= input.TotalData.Average(item => item.Sdy),
+            laoi= input.TotalData.Average(item => item.laoi),
+            lspec = input.TotalData.Average(item => item.lspec),
+            ltg = input.TotalData.Average(item => item.ltg),
+            ltotal = input.TotalData.Average(item => item.ltotal),
+        };
+
+        return Ok(new SuccessResponse<StatisticAverageData>(data: new StatisticAverageData
+        {
+            monthlyAverage = dataByMonth,
+            totalAverage = dataByTotal,
+        }));
+    }
 }
