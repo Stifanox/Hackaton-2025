@@ -1,5 +1,6 @@
 ﻿using Hackaton.DTOs;
 using Hackaton.DTOs.FormattedStatistics;
+using Hackaton.Helpers;
 using Hackaton.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +16,10 @@ public class PdfApiController : ControllerBase
     }
 
     [HttpPost("statistics")]
-    public IActionResult GenerateStatisticsPdf([FromBody] StatisticAverageData model)
+    public IActionResult GenerateStatisticsPdf([FromBody] StatisticsDto model)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return UnprocessableEntity(new ErrorResponse<string>(422, "Wysłano niepoprawne dane"));
 
         var pdfBytes = _pdfGenerator.GenerateStatisticsPdf(model);
 
