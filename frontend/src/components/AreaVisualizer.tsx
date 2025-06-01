@@ -314,7 +314,7 @@ const RectangleFittingVisualizer: React.FC = () => {
               />
             ))}
 
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
+            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
               <SendButton panelResults={panelResults} onSend={handleSend} />
             </div>
 
@@ -334,7 +334,7 @@ const RectangleFittingVisualizer: React.FC = () => {
 
         {statsResponse && statsResponse.data.monthlyAverage && (
           <>
-            <div className="mt-6 px-4">
+            <div className="mt-12 px-4">
               <MonthChart data={statsResponse.data.monthlyAverage} />
             </div>
           </>
